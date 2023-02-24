@@ -226,18 +226,20 @@ class Programacion_lineal():
     self.restaurar()
 
     return self.duales
+  
   def encontrar_rectas(self):
     intersecciones = [self.interseccion(self.r1,self.r2), self.interseccion(self.r1,self.r3), self.interseccion(self.r2,self.r3)]
     rectas = [(self.r1,self.r2),(self.r1,self.r3), (self.r2,self.r3)]
+    rectas_sin_u = [self.r3, self.r2, self.r1]
     for i, interseccion,  in enumerate(intersecciones):
       print('************************* el pinche punto **********************')
       print(self.punto , interseccion)
       if self.punto == interseccion:
-        return rectas[i]
+        return [rectas[i], rectas_sin_u[i]]
     
   def optimalidad(self):
     self.int_optimalidad = []
-    rectas=self.encontrar_rectas()
+    rectas=self.encontrar_rectas()[0]
     print('**************************** las pinches rectas  ***************************************+')
     print(rectas)
     self.int_optimalidad.append(self.obtener_intervalo_o(rectas[0], rectas[1], self.z[1], 0))
@@ -278,21 +280,16 @@ class Programacion_lineal():
   def factibilidad(self):
 
       self.int_factibilidad = []
-      intervalo_lim= self.obtener_intervalo_f(self.r2, self.r3)
-      intervalo = (self.calcular_restriccion(intervalo_lim[0], 0, self.r1) , self.calcular_restriccion(0, intervalo_lim[1], self.r1))
+
+      rectas=self.encontrar_rectas()
+      intervalo_lim= (self.interseccion_ejes(rectas[0][0]), self.interseccion_ejes(rectas[0][1]))
+      intervalo_interseccion = (self.interseccion(rectas[1], rectas[0][0]), self.interseccion(rectas[1], rectas[0][1]))
+      
+      intervalo = (self.calcular_restriccion(intervalo_lim[0][1], intervalo_lim[0], self.r1) , self.calcular_restriccion(0, intervalo_lim[1], self.r1))
       intervalo_ordenado= (min(intervalo[0],intervalo[1]), max(intervalo[0],intervalo[1]))
       self.int_factibilidad.append(intervalo_ordenado)
 
-      intervalo_lim= self.obtener_intervalo_f(self.r1, self.r3)
-      intervalo = (self.calcular_restriccion(intervalo_lim[0], 0, self.r2) , self.calcular_restriccion(0, intervalo_lim[1] , self.r2))
-      intervalo_ordenado= (min(intervalo[0],intervalo[1]), max(intervalo[0],intervalo[1]))
-      self.int_factibilidad.append(intervalo_ordenado)
-
-      intervalo_lim= self.obtener_intervalo_f(self.r1, self.r2)
-      intervalo = (self.calcular_restriccion(intervalo_lim[0], 0 , self.r3) , self.calcular_restriccion(0, intervalo_lim[1], self.r3))
-      intervalo_ordenado= (min(intervalo[0],intervalo[1]), max(intervalo[0],intervalo[1]))
-      self.int_factibilidad.append(intervalo_ordenado)
-      print('factibilidad: '.format(self.int_factibilidad))
+      
       return self.int_factibilidad
 
   def get_intervalos(self):

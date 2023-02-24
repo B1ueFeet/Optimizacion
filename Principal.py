@@ -66,11 +66,9 @@ tk.Label(frame_datos, text="Restriccion 1: ").grid(sticky= 'E',padx=5,row=2, col
 tk.Label(frame_datos, text="Restriccion 2: ").grid(sticky= 'E',padx=5,row=3, column=0)
 tk.Label(frame_datos, text="Restriccion 3: ").grid(sticky= 'E',padx=5,row=4, column=0)
 
-tk.Label(frame_datos, text="Ingrese los datos, luego presione el Boton Calcular").grid(sticky= 'W',padx=5,row=0, column=0, columnspan=2)
-tk.Label(frame_datos, text="Funcion").grid(sticky= 'E',padx=5,row=1, column=0)
-tk.Label(frame_datos, text="").grid(sticky= 'E',padx=5,row=2, column=0)
-tk.Label(frame_datos, text="Restriccion 2: ").grid(sticky= 'E',padx=5,row=3, column=0)
-tk.Label(frame_datos, text="Restriccion 3: ").grid(sticky= 'E',padx=5,row=4, column=0)
+tk.Label(frame_datos2, text="Ingrese los datos, luego presione el Boton Calcular").grid(sticky= 'W',padx=5,row=0, column=0, columnspan=2)
+tk.Label(frame_datos2, text="Funcion").grid(sticky= 'E',padx=5,row=1, column=0)
+tk.Label(frame_datos2, text="Error").grid(sticky= 'E',padx=5,row=2, column=0)
 
 ent_Z = tk.Entry(frame_datos, width=40)
 ent_r1 = tk.Entry(frame_datos, width=40)
@@ -86,6 +84,15 @@ ent_Z.insert(0,"2x + 3y")
 ent_r1.insert(0,"10x +5y <= 600")
 ent_r2.insert(0,"6x + 20y <=600")
 ent_r3.insert(0,"8x + 10y <= 600")
+
+ent_polinomio = tk.Entry(frame_datos2, width=40)
+ent_error = tk.Entry(frame_datos2, width=40)
+
+ent_polinomio.grid(padx=5, row=1, column=1)
+ent_error.grid(padx=5, row=2, column=1)
+
+ent_polinomio.insert(0,"2x + 3y")
+ent_error.insert(0,"10x +5y <= 600")
 
 maximizar = tk.Checkbutton(frame_datos, text="Maximizar: False\nMinimizar: True", variable=minimax)
 maximizar.grid(padx=5,pady=10, row=5, column=0)
@@ -176,7 +183,7 @@ def actualizar_grafico():
         s2 = (R2 - r2[0] * x) / r2[1]
         s3 = (R3 - r3[0] * x) / r3[1]
         ax.clear()
-        ##ax.plot(t, s0, label= 'Z: ', color='red')
+        ax.plot(t, s0, label= 'Z: ', color='red')
         ax.plot(t, s1, label= 'R1: ', color='lightskyblue')
         ax.plot(t, s2, label= 'R2: ', color='mediumorchid')
         ax.plot(t, s3, label= 'R3: ', color='yellowgreen')
@@ -209,7 +216,7 @@ def actualizar_grafico():
 
     ax = fig.add_subplot()
     ax.clear()
-    ##ax.plot(x, y0, label= 'Z: ', color='red')
+    ax.plot(x, y0, label= 'Z: ', color='red')
     ax.plot(x, y1, label= 'R1: ', color='lightskyblue')
     ax.plot(x, y2, label= 'R2: ', color='mediumorchid')
     ax.plot(x, y3, label= 'R3: ', color='yellowgreen')
