@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 import ProgramacionLineal as pl
+import NewtonRapson as nR
 
 
 def hallar_numericos(s):
@@ -27,6 +28,8 @@ root.state("zoomed")
 #root.geometry("400x300")
 
 #Crear lo que se usara en la parte 1
+set_roots = set()
+lst_pol =[]
 lst_z = []
 lst_r1 = []
 lst_r2 = []
@@ -91,8 +94,8 @@ ent_error = tk.Entry(frame_datos2, width=40)
 ent_polinomio.grid(padx=5, row=1, column=1)
 ent_error.grid(padx=5, row=2, column=1)
 
-ent_polinomio.insert(0,"2x + 3y")
-ent_error.insert(0,"10x +5y <= 600")
+ent_polinomio.insert(0,"36x -156x + 241x -156x + 36")
+ent_error.insert(0,"0.00001")
 
 maximizar = tk.Checkbutton(frame_datos, text="Maximizar: False\nMinimizar: True", variable=minimax)
 maximizar.grid(padx=5,pady=10, row=5, column=0)
@@ -101,6 +104,9 @@ maximizar.grid(padx=5,pady=10, row=5, column=0)
 
 btn_resolver = tk.Button(frame_datos,text="Resolver", width=40 )
 btn_resolver.grid(padx=5, pady=10, row=6, column=0, columnspan=2)
+
+btn_calcular = tk.Button(frame_datos2,text="Resolver", width=40 )
+btn_calcular.grid(padx=5, pady=10, row=6, column=0, columnspan=2)
 
 
 tk.Label(frame_deslizadores, text="Se obtuvieron los siguientes resultados: ").grid(sticky= 'W',padx=5,row=0, column=0, columnspan=2)
@@ -124,12 +130,16 @@ tk.Label(frame_deslizadores, text="Intervalo Factibilidad de R3: {}".format(inte
 sld_r3 = tk.Scale(frame_deslizadores, from_=0, to=10, orient=tk.HORIZONTAL,length=330)
 sld_r3.grid(sticky= 'W',    padx=5,row=13, column=0, columnspan=2)
 
-valor=2
 
 fig = Figure(figsize=(6, 4), dpi=150)
 canvas = FigureCanvasTkAgg(fig, master=frame_grafica)
 canvas.draw()
 canvas.get_tk_widget().grid(row=0, column=0, sticky= 'W', rowspan=2, columnspan=2)
+
+fig2 = Figure(figsize=(6, 4), dpi=150)
+canvas2 = FigureCanvasTkAgg(fig2, master=frame_grafica2)
+canvas2.draw()
+canvas2.get_tk_widget().grid(row=0, column=0, sticky= 'W', rowspan=2, columnspan=2)
 
 
 
@@ -278,7 +288,43 @@ def get_values(z, r1, r2, r3 ):
     dual, optimalidad, factibilidad = problema.get_intervalos()
     return z_optimo, punto_optimo, dual, optimalidad, factibilidad
 
+def newton_r(polinomio):
+    newton = nR.NewtonRapson(polinomio,ent_error.get(), ent_error.get())
+    set_roots=  newton.calcular_raiz()
+
+def actualizar_grafico2():
+    global sld_z2,sld_z1,canvas,fig
+
+    pol= hallar_numericos(ent_polinomio.get())
+
+    print('aqui se actualiza el grafico')
+
+        
+    x = np.linspace(0, 100, 100)
+    y0= pol[0]*x**4 + pol[1]*x**3 + pol[2]*x**2 + pol[3]*x + pol[4]
+
+    ax = fig.add_subplot()
+    ax.clear()
+    ax.plot(x, y0, label= 'Z: ', color='blue')
+
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_title('Grafica de funcion')
+    ax.legend()
+    for punto in set_roots:
+        ax.plot(punto, 0)
+    
+    canvas.draw()
+
 def resolver():
+    global set_roots, fig2
+    fig2.clear()
+    polinomio = hallar_numericos(ent_polinomio.get())
+    newton_r()
+    actualizar_grafico2()
+
+def calcular():
     global lst_z,lst_r1,lst_r2,lst_r3, fig
     fig.clear()
     lst_z = hallar_numericos(ent_Z.get())
@@ -292,6 +338,7 @@ def resolver():
     actualizar_grafico()
 
 btn_resolver.config(command= resolver)
+btn_calcular.config(command= calcular)
 # Iniciar el loop principal
 root.mainloop()
 
