@@ -31,12 +31,12 @@ lst_z = []
 lst_r1 = []
 lst_r2 = []
 lst_r3 = []
-intervalo_z1 = (0.,0.)
-intervalo_z2 = (0.,0.)
-intervalo_r1 = (0.,0.)
-intervalo_r2 = (0.,0.)
-intervalo_r3 = (0.,0.)
-punto_optimo = (0.,0.)
+intervalo_z1 = []
+intervalo_z2 = []
+intervalo_r1 = []
+intervalo_r2 = []
+intervalo_r3 = []
+punto_optimo = []
 z_optimo = 0.
 minimax = tk.BooleanVar()
 
@@ -142,7 +142,7 @@ frame_deslizadores.grid(row=1, column=0, sticky='N')
 
 
 def actualizar_grafico():
-    global sld_z2,sld_z1,canvas,fig,punto_optimo,z_optimo
+    global sld_z2,sld_z1,canvas,fig
 
     z= hallar_numericos(ent_Z.get())
     r1 = hallar_numericos(ent_r1.get())
@@ -178,7 +178,7 @@ def actualizar_grafico():
         # Aquí se hace la actualización de la gráfica
         # Para este ejemplo, se grafica una función seno
         t = np.linspace(0, 100, 100)
-        s0 = (z_optimo - z1*t)/z2
+        s0 = (todos[0] - z1*t)/z2
         s1 = (R1 - r1[0] * x) / r1[1]
         s2 = (R2 - r2[0] * x) / r2[1]
         s3 = (R3 - r3[0] * x) / r3[1]
@@ -255,10 +255,17 @@ def actualizar_grafico():
     sld_r3.config(from_=intervalo_r3[0], to=intervalo_r3[1], resolution=0.01, variable=r3_value,
          orient=tk.HORIZONTAL, label="Intervalo Factibilidad de z1: {}".format(intervalo_r3),
          command=update_graph)
+    
+    sld_z1.set(z[0])
+    sld_z2.set(z[1])
+
+    sld_r1.set(r1[2])
+    sld_r2.set(r2[2])
+    sld_r3.set(r3[2])
 
 def asignar_valores():
     global z_optimo, punto_optimo, intervalo_r1, intervalo_r2, intervalo_r3, intervalo_z1, intervalo_z2
-    z_optimo, punto_optimo, optimalidad, factibilidad =get_values(lst_z,lst_r1,lst_r2,lst_r3)
+    z_optimo, punto_optimo,dual, optimalidad, factibilidad =get_values(lst_z,lst_r1,lst_r2,lst_r3)
     intervalo_z1= optimalidad[0]
     intervalo_z2 = optimalidad[1]
     intervalo_r1= factibilidad[0]
@@ -268,16 +275,19 @@ def asignar_valores():
 def get_values(z, r1, r2, r3 ):
     problema = pl.Programacion_lineal(z,r1,r2,r3, minimax.get())
     z_optimo , punto_optimo = problema.get_optimo()
-    optimalidad, factibilidad = problema.get_intervalos()
-    return z_optimo, punto_optimo, optimalidad, factibilidad
+    dual, optimalidad, factibilidad = problema.get_intervalos()
+    return z_optimo, punto_optimo, dual, optimalidad, factibilidad
 
 def resolver():
     global lst_z,lst_r1,lst_r2,lst_r3, fig
     fig.clear()
-    lst_z = list(hallar_numericos(ent_Z.get()))
-    lst_r1 = list(hallar_numericos(ent_r1.get()))
-    lst_r2 = list(hallar_numericos(ent_r2.get()))
-    lst_r3 = list(hallar_numericos(ent_r3.get()))
+    lst_z = hallar_numericos(ent_Z.get())
+    lst_r1 = hallar_numericos(ent_r1.get())
+    lst_r2 = hallar_numericos(ent_r2.get())
+    lst_r3 = hallar_numericos(ent_r3.get())
+    print('**********************************************************************++')
+    print(lst_r1)
+    print('**********************************************************************++')
     asignar_valores()
     actualizar_grafico()
 

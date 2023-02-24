@@ -235,6 +235,8 @@ class Programacion_lineal():
       print('************************* el pinche punto **********************')
       print(self.punto , interseccion)
       if self.punto == interseccion:
+        print('************************* sin usar **********************')
+        print(rectas_sin_u[i])
         return [rectas[i], rectas_sin_u[i]]
     
   def optimalidad(self):
@@ -245,6 +247,7 @@ class Programacion_lineal():
     self.int_optimalidad.append(self.obtener_intervalo_o(rectas[0], rectas[1], self.z[1], 0))
     self.int_optimalidad.append(self.obtener_intervalo_o(rectas[1], rectas[0], self.z[0], 1))
     print('optimalidad: '.format(self.int_optimalidad))
+    self.restaurar()
     return self.int_optimalidad
   
   def obtener_intervalo_o(self, R1, R2, zn, op):
@@ -282,16 +285,59 @@ class Programacion_lineal():
       self.int_factibilidad = []
 
       rectas=self.encontrar_rectas()
+      print('**************************** las rectas *****************')
+      print(rectas[0], rectas[1])
       intervalo_lim= (self.interseccion_ejes(rectas[0][0]), self.interseccion_ejes(rectas[0][1]))
       intervalo_interseccion = (self.interseccion(rectas[1], rectas[0][0]), self.interseccion(rectas[1], rectas[0][1]))
-      
-      intervalo = (self.calcular_restriccion(intervalo_lim[0][1], intervalo_lim[0], self.r1) , self.calcular_restriccion(0, intervalo_lim[1], self.r1))
-      intervalo_ordenado= (min(intervalo[0],intervalo[1]), max(intervalo[0],intervalo[1]))
-      self.int_factibilidad.append(intervalo_ordenado)
+      print('**************************** esta el perro intervalo limite *****************')
+      print(intervalo_lim)
+
+      print('**************************** esta el perro intervalo interseccion *****************')
+      print(intervalo_interseccion)
+      infinito = 1000
+      if rectas[1] == self.r1:
+        intervalo = (self.calcular_restriccion(self.punto[0], self.punto[1], rectas[1]) , infinito)
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(intervalo_lim[1][1][0], intervalo_lim[1][1][1], rectas[0][0]) , 
+                   self.calcular_restriccion(intervalo_interseccion[0][0], intervalo_interseccion[0][1], rectas[0][0]))
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(intervalo_lim[0][0][0], intervalo_lim[0][0][1], rectas[0][1]) , 
+                   self.calcular_restriccion(intervalo_interseccion[0][0], intervalo_interseccion[0][1], rectas[0][1]))
+        self.int_factibilidad.append(intervalo)
+
+      elif rectas[1] == self.r2:
+        intervalo = (self.calcular_restriccion(intervalo_lim[1][1][0], intervalo_lim[1][1][1], rectas[0][0]) , 
+                   self.calcular_restriccion(intervalo_interseccion[0][0], intervalo_interseccion[0][1], rectas[0][0]))
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(self.punto[0], self.punto[1], rectas[1]) , infinito)
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(intervalo_lim[0][0][0], intervalo_lim[0][0][1], rectas[0][1]) , 
+                   self.calcular_restriccion(intervalo_interseccion[0][0], intervalo_interseccion[0][1], rectas[0][1]))
+        self.int_factibilidad.append(intervalo)
+
+
+      elif rectas[1] == self.r3:
+        intervalo = (self.calcular_restriccion(intervalo_lim[1][1][0], intervalo_lim[1][1][1], rectas[0][0]) , 
+                   self.calcular_restriccion(intervalo_interseccion[1][0], intervalo_interseccion[1][1], rectas[0][0]))
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(intervalo_lim[0][0][0], intervalo_lim[0][0][1], rectas[0][1]) , 
+                   self.calcular_restriccion(intervalo_interseccion[0][0], intervalo_interseccion[0][1], rectas[0][1]))
+        self.int_factibilidad.append(intervalo)
+
+        intervalo = (self.calcular_restriccion(self.punto[0], self.punto[1], rectas[1]) , infinito)
+        self.int_factibilidad.append(intervalo)
+
+      print('************************ el perro intervalo ************************')
+      print(self.int_factibilidad)
 
       
       return self.int_factibilidad
 
   def get_intervalos(self):
-    return self.optimalidad(), self.factibilidad()
+    return self.get_dual(),self.optimalidad(), self.factibilidad()
 
